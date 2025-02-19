@@ -128,7 +128,7 @@ namespace CollegeApp.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
+        [Route("UpdateStudent")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
