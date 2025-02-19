@@ -1,9 +1,12 @@
-# github action to deploy munsonpickles api to azure
+# github action to deploy College App API to azure
 
 name: Deploy College App API
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main  # Trigger Automatic Deploy On push to main branch
+  workflow_dispatch:  # Allow manual trigger
 
 env:
   AZURE_WEBAPP_NAME: "web-api-sample"
