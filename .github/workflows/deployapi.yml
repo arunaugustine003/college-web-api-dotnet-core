@@ -1,6 +1,6 @@
 # github action to deploy munsonpickles api to azure
 
-name: Deploy Munson Pickles API
+name: Deploy College App API
 
 on:
   workflow_dispatch:
