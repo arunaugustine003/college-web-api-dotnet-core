@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using CollegeApp.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CollegeApp.Controllers
@@ -150,14 +152,48 @@ namespace CollegeApp.Controllers
             return NoContent();
         }
 
+        [HttpPatch]
+        [Route("UpdatePartial/{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult UpdateStudentPartial(int id, [FromBody] JsonPatchDocument<StudentDTO> patchDocument)
+        {
+            if (patchDocument == null || id <= 0)
+                BadRequest();
 
+            var existingStudent = CollegeRepository.Students.Where(s => s.Id == id).FirstOrDefault();
 
-        [HttpDelete("{id}", Name = "DeleteStudentById")]
+            if (existingStudent == null)
+                return NotFound();
+
+            var studentDTO = new StudentDTO
+            {
+                Id = existingStudent.Id,
+                StudentName = existingStudent.StudentName,
+                Email = existingStudent.Email,
+                Address = existingStudent.Address
+            };
+            patchDocument?.ApplyTo(studentDTO, ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            existingStudent.StudentName = studentDTO.StudentName;
+            existingStudent.Email = studentDTO.Email;
+            existingStudent.Address = studentDTO.Address;
+
+            return NoContent();
+        }
+
+        [HttpDelete("Delete/{id}", Name = "DeleteStudentById")]
+        // api/student/delete/1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult DeleteStudent(int id)
+        public ActionResult<bool> DeleteStudent(int id)
         {
             if (id <= 0)
             {
